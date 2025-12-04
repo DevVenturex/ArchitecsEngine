@@ -6,7 +6,7 @@ pub struct WindowService {
 
 impl Service for WindowService {
     fn init(&self) {
-        todo!()
+
     }
 
     fn update(&mut self) {

@@ -1,5 +1,5 @@
-pub mod window_service;
+pub mod service;
+pub mod description;
 
-pub trait Window {
-    fn title(&self) -> String;
-}
+mod window;
+pub use window::*;
