@@ -18,8 +18,3 @@ impl ServiceLocator {
         self.services.push(Box::new(service));
     }
 }
-
-fn test() {
-    let mut locator = ServiceLocator::empty();
-    locator.add_service::<DumpService>();
-}
