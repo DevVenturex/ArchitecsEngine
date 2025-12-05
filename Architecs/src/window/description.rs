@@ -1,5 +1,8 @@
+use std::fmt::Debug;
+
 pub trait WindowDescriber {
     fn resolution(&self) -> &WindowResolution;
+    fn resizeable(&self) -> bool;
     fn title(&self) -> String;
     fn decorations(&self) -> bool;
     fn transparent(&self) -> bool;
@@ -10,6 +13,7 @@ pub trait WindowDescriber {
 #[derive(Debug, Clone, Copy)]
 pub struct DefaultWindowDescription {
     resolution: WindowResolution,
+    resizeable: bool,
     title: &'static str,
     decorations: bool,
     transparent: bool,
@@ -21,6 +25,7 @@ impl Default for DefaultWindowDescription {
     fn default() -> Self {
         Self {
             title: "App",
+            resizeable: true,
             decorations: true,
             transparent: true,
             focused: true,
@@ -33,6 +38,10 @@ impl Default for DefaultWindowDescription {
 impl WindowDescriber for DefaultWindowDescription {
     fn resolution(&self) -> &WindowResolution {
         &self.resolution
+    }
+
+    fn resizeable(&self) -> bool {
+        self.resizeable
     }
 
     fn title(&self) -> String {
@@ -60,6 +69,7 @@ impl WindowDescriber for DefaultWindowDescription {
 pub struct WindowResolution {
     physical_width: u32,
     physical_height: u32,
+    scale_factor_override: Option<f32>,
     scale_factor: f32,
 }
 
@@ -68,6 +78,7 @@ impl Default for WindowResolution {
         Self {
             physical_width: 1280,
             physical_height: 720,
+            scale_factor_override: None,
             scale_factor: 1.0,
         }
     }
@@ -80,6 +91,11 @@ impl WindowResolution {
             physical_height,
             ..Default::default()
         }
+    }
+
+    pub fn with_scale_factor_override(mut self, scale_factor_override: f32) -> Self {
+        self.set_scale_factor_override(Some(scale_factor_override));
+        self
     }
 
     #[inline]
@@ -112,9 +128,20 @@ impl WindowResolution {
         (self.physical_width, self.physical_height)
     }
 
-    #[inline]
+    
     pub fn scale_factor(&self) -> f32 {
+        self.scale_factor_override
+            .unwrap_or_else(|| self.base_scale_factor())
+    }
+
+    #[inline]
+    pub fn base_scale_factor(&self) -> f32 {
         self.scale_factor
+    }
+
+    #[inline]
+    pub fn scale_factor_override(&self) -> Option<f32> {
+        self.scale_factor_override
     }
 
     #[inline]
@@ -130,10 +157,22 @@ impl WindowResolution {
         self.physical_width = width;
         self.physical_height = height;
     }
+    
+        #[inline]
+        pub fn set_scale_factor(&mut self, scale_factor: f32) {
+            self.scale_factor = scale_factor;
+        }
 
     #[inline]
-    pub fn set_scale_factor(&mut self, scale_factor: f32) {
+    pub fn set_scale_factor_and_apply_to_physical_size(&mut self, scale_factor: f32) {
         self.scale_factor = scale_factor;
+        self.physical_width = (self.physical_width as f32 * scale_factor) as u32;
+        self.physical_height = (self.physical_height as f32 * scale_factor) as u32;
+    }
+
+    #[inline]
+    pub fn set_scale_factor_override(&mut self, scale_factor_override: Option<f32>) {
+        self.scale_factor_override = scale_factor_override; 
     }
 }
 

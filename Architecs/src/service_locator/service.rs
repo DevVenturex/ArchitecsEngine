@@ -1,17 +1,19 @@
+use crate::app::App;
+
 pub trait Service {
-    fn init(&self);
+    fn init(&self, app: &mut App);
     fn update(&mut self);
     fn cleanup(&mut self);
 }
 
 pub trait ServiceBuilder {
-    fn build() -> Self where Self: Service;
+    fn build(app: &mut App) -> Self where Self: Service;
 }
 
 pub struct DumpService;
 
 impl Service for DumpService {
-    fn init(&self) {        
+    fn init(&self, app: &mut App) {        
     }
 
     fn update(&mut self) {
@@ -22,7 +24,7 @@ impl Service for DumpService {
 }
 
 impl ServiceBuilder for DumpService {
-    fn build() -> Self where Self: Service {
+    fn build(app: &mut App) -> Self where Self: Service {
         Self
     }
 }

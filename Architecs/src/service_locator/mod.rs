@@ -2,8 +2,16 @@ mod service;
 
 pub use service::*;
 
+use crate::app::App;
+
 pub struct ServiceLocator {
     services: Vec<Box<dyn Service>>,
+}
+
+impl Default for ServiceLocator {
+    fn default() -> Self {
+        Self::empty()
+    }
 }
 
 impl ServiceLocator {
@@ -14,7 +22,10 @@ impl ServiceLocator {
     }
 
     pub fn add_service<S: Service + ServiceBuilder + 'static>(&mut self) {
-        let service = S::build();
-        self.services.push(Box::new(service));
+        
     }
-}
+
+    pub fn get_service<S: Service + 'static>(&self) -> &S {
+        
+    }
+}   

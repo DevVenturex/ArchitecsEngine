@@ -2,25 +2,22 @@ use std::{any::Any, marker::PhantomData, ops::Deref, sync::Arc};
 
 use raw_window_handle::{HandleError, HasDisplayHandle, HasWindowHandle, RawDisplayHandle, RawWindowHandle};
 
-use crate::window::description::{WindowDescriber, DefaultWindowDescription};
-
-pub type DefaultWindow = Window<DefaultWindowDescription>;
+use crate::window::description::WindowDescriber;
 
 #[derive(Debug, Clone)]
-pub struct Window<T: WindowDescriber> {
-    desc: T,
+pub struct Window {
     _window: Arc<dyn Any + Send + Sync>,
     window_handle: RawWindowHandle,
     display_handle: RawDisplayHandle,
+    
 }
 
-impl<T: WindowDescriber + 'static> Window<T> {
-    pub fn new<W: HasWindowHandle + HasDisplayHandle + 'static>(desc: T, window: &WindowWrapper<W>) -> Result<Window<T>, HandleError> {
+impl Window {
+    pub fn new<W: HasWindowHandle + HasDisplayHandle + 'static>(_desc: Box<dyn WindowDescriber>, window: &WindowWrapper<W>) -> Result<Window, HandleError> {
         Ok(Self {
             _window: window.reference.clone(),
             window_handle: window.window_handle()?.as_raw(),
             display_handle: window.display_handle()?.as_raw(),
-            desc,  
         })
     }
 
@@ -30,11 +27,6 @@ impl<T: WindowDescriber + 'static> Window<T> {
 
     pub fn get_display_handle(&self) -> RawDisplayHandle {
         self.display_handle
-    }
-
-    // TODO: implement functions from describer here
-    pub fn description(&self) -> &T {
-        &self.desc
     }
 }
 
