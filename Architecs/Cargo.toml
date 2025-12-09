@@ -8,5 +8,6 @@ default = ["winit"]
 winit = ["dep:winit"]
 
 [dependencies]
+nalgebra = "0.34.1"
 raw-window-handle = "0.6.2"
 winit = { version = "0.30.12", optional = true }

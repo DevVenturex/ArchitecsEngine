@@ -5,6 +5,7 @@ use winit::event_loop::EventLoopProxy;
 pub mod service;
 pub mod winit_windows;
 pub mod state;
+pub mod window_handler;
 
 pub struct EventLoopProxyWrapper<T: 'static>(EventLoopProxy<T>);
 

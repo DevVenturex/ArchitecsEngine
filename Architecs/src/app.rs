@@ -1,13 +1,8 @@
-use std::sync::Arc;
-
-use winit::event_loop::EventLoopProxy;
-
-use crate::{platform::winit::EventLoopProxyWrapper, service_locator::{Service, ServiceBuilder, ServiceLocator}};
+use crate::{platform::winit::service::WinitService, service_locator::{Service, ServiceLocator}, window::{Window, service::WindowService}};
 
 #[derive(Default)]
 pub struct App {
-    pub service_locator: ServiceLocator,
-    pub event_loop_proxy: Option<EventLoopProxy<()>>,
+    service_locator: ServiceLocator,
 }
 
 impl App {
@@ -15,15 +10,15 @@ impl App {
         Self::default()
     }
 
-    pub fn add_service<S: Service + ServiceBuilder + 'static>(&mut self) {
+    pub fn add_service<S: Service + 'static>(&mut self) {
         self.service_locator.add_service::<S>();
     }
 
-    pub fn get_service<S: Service + 'static>(&self) -> &S {
+    pub fn get_service<S: Service + 'static>(&self) -> S {
 
     }
 
-    pub fn create_event_loop_proxy(&mut self, proxy: EventLoopProxy<()>) {
-        self.event_loop_proxy = Some(proxy);
+    pub fn create_winit_window(&mut self, window: Window) {
+        self.get_service::<WinitService>().create_window(window);
     }
 }

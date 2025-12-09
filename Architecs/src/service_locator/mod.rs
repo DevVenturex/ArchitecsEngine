@@ -21,11 +21,7 @@ impl ServiceLocator {
         }
     }
 
-    pub fn add_service<S: Service + ServiceBuilder + 'static>(&mut self) {
-        
-    }
-
-    pub fn get_service<S: Service + 'static>(&self) -> &S {
-        
+    pub fn add_service<S: Service + 'static>(&mut self, app: &mut App) {
+        self.services.push(Box::new(S::build(app)));
     }
 }   
